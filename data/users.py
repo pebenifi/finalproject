@@ -28,6 +28,9 @@ class User(SqlAlchemyBase, UserMixin, SerializerMixin):
     liter = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     profile = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     photo_url = sqlalchemy.Column(sqlalchemy.String, nullable=True)
+    follow = sqlalchemy.Column(sqlalchemy.String, nullable=True)
+    messages_ids = sqlalchemy.Column(sqlalchemy.String, nullable=True)
+    chat_with = sqlalchemy.Column(sqlalchemy.String, nullable=True)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -65,3 +68,48 @@ class InfoForm(FlaskForm):
     profile = StringField('Profile', validators=[DataRequired()])
     photo_url = StringField('Photo url', validators=[DataRequired()])
     submit = SubmitField('Submit')
+
+
+class News(SqlAlchemyBase, UserMixin, SerializerMixin):
+    __tablename__ = 'news'
+
+    id = sqlalchemy.Column(sqlalchemy.Integer,
+                           primary_key=True, autoincrement=True)
+    user_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("users.id"))
+    text = sqlalchemy.Column(sqlalchemy.String, nullable=True)
+    img_url = sqlalchemy.Column(sqlalchemy.String, nullable=True)
+    likes = sqlalchemy.Column(sqlalchemy.String, nullable=True)
+    ids = sqlalchemy.Column(sqlalchemy.String, nullable=True)
+    user = orm.relation('User')
+
+
+class AddNews(FlaskForm):
+    text = TextAreaField('Text', validators=[DataRequired()])
+    img_url = StringField('Photo url', validators=[DataRequired()])
+    submit = SubmitField('Submit')
+
+
+class Messages(SqlAlchemyBase, UserMixin, SerializerMixin):
+    __tablename__ = 'messages'
+
+    id = sqlalchemy.Column(sqlalchemy.Integer,
+                           primary_key=True, autoincrement=True)
+    user_from = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("users.id"))
+    text = sqlalchemy.Column(sqlalchemy.String, nullable=True)
+    img_url = sqlalchemy.Column(sqlalchemy.String, nullable=True)
+    user = orm.relation('User')
+
+
+class Groups(SqlAlchemyBase, UserMixin, SerializerMixin):
+    __tablename__ = 'messages_groups'
+
+    id = sqlalchemy.Column(sqlalchemy.Integer,
+                           primary_key=True, autoincrement=True)
+    messages = sqlalchemy.Column(sqlalchemy.String, nullable=True)
+    users = sqlalchemy.Column(sqlalchemy.String, nullable=True)
+    last = sqlalchemy.Column(sqlalchemy.String, nullable=True)
+
+
+class SendMessage(FlaskForm):
+    text = StringField('', validators=[DataRequired()])
+    submit = SubmitField('➤')
